@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document Analyzer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+
+</head>
+<body>
+    <h1>Document Analyzer</h1>
+    <div>
+        <input type="file" id="fileInput" accept=".docx, .pages" />
+        <button onclick="processFile()">Analyze and Export</button>
+
+    </div>
+    <div class="resuls">
+        <div class="sentence-count">
+            <span>წინადადებების რაოდენობა ტექსტში: </span>
+            <span id="sentence-count-result"></span>
+        </div>
+        <div class="word-count">
+            <span>სიტყვების რაოდენობა ტექსტში: </span>
+            <span id="word-count-result"></span>
+        </div>
+        <div class="average word per sentence">
+            <span>საშუალო სიტყ. რაოდენობა</span>
+            <span id="avg-word-result"></span>
+        </div>
+        <div class="total vowels">
+            <span>ჯამური ხმოვნების რაოდენობა</span>
+            <span id="total-vowels-result"></span>
+        </div>
+        <div class="averag vowel per word">
+            <span>საშუალო ხმოვნების რაოდენობა სიტყვაში</span>
+            <span id="avg-vowel-result"></span>
+        </div>
+    </div>
+
+    <script src="./script.js"></script>
+</body>
+</html>
