@@ -74,79 +74,83 @@ async function processPdf(file) {
     reader.readAsArrayBuffer(file);
 }
 
-function analyzeText(text) {
- // Helper function to count vowels in a word
-    function countVowels(word) {
-        return word.match(/[აეიოუ]/gi)?.length || 0;
-    }
+// function analyzeText(text) {
+//  // Helper function to count vowels in a word
+//     function countVowels(word) {
+//         return word.match(/[აეიოუ]/gi)?.length || 0;
+//     }
 
 
-    // Split the text into sentences using regex to capture various sentence endings.
-    // const sentences = text.match(/[^.!?]*[.!?]/g) || [];
-    const rawSentences = text.split(/(?<=[.!?])\s+/);
-    const sentences = rawSentences.filter(sentence => sentence.trim().length > 0);
-    const sentenceCount = sentences.length;
+//     // Split the text into sentences using regex to capture various sentence endings.
+//     // const sentences = text.match(/[^.!?]*[.!?]/g) || [];
+//     const rawSentences = text.split(/(?<=[.!?])\s+/);
+//     const sentences = rawSentences.filter(sentence => sentence.trim().length > 0);
+//     const sentenceCount = sentences.length;
 
-    let wordCount = 0;
-    let totalWordLength = 0;
-    let totalVowelCount = 0;
-    const wordFrequency = {};
+//     let wordCount = 0;
+//     let totalWordLength = 0;
+//     let totalVowelCount = 0;
+//     const wordFrequency = {};
 
-    sentences.forEach(sentence => {
-        // Split the sentence into words, considering punctuation and spaces.
-        const words = sentence.trim().split(/\s+/);
-        wordCount += words.length;
+//     sentences.forEach(sentence => {
+//         // Split the sentence into words, considering punctuation and spaces.
+//         const words = sentence.trim().split(/\s+/);
+//         wordCount += words.length;
 
-        words.forEach(word => {
-            let trimedWord = word.replace(/(?<=[.!?])\s+/, '')
-            const isWord = trimedWord.match(/[აეიოუ]/gi)?.length || 0;
-            console.log(isWord)
-            if (isWord <= 0) {
-                wordCount--
-            } else{
-                wordFrequency[trimedWord] = (wordFrequency[trimedWord] || 0) + 1;
-                totalWordLength += trimedWord.length;
-                totalVowelCount += countVowels(trimedWord);
-            }
+//         words.forEach(word => {
+//             let trimedWord = word.replace(/(?<=[.!?])\s+/, '')
+//             const isWord = trimedWord.match(/[აეიოუ]/gi)?.length || 0;
+//             console.log(isWord)
+//             if (isWord <= 0) {
+//                 wordCount--
+//             } else{
+//                 wordFrequency[trimedWord] = (wordFrequency[trimedWord] || 0) + 1;
+//                 totalWordLength += trimedWord.length;
+//                 totalVowelCount += countVowels(trimedWord);
+//             }
         
-        });
-        console.log(words);
-    });
+//         });
+//         console.log(words);
+//     });
 
-    const averageWordCountPerSentence = sentenceCount ? wordCount / sentenceCount : 0;
-    const averageVowelCountPerWord = wordCount ? totalVowelCount / wordCount : 0;
+//     const averageWordCountPerSentence = sentenceCount ? wordCount / sentenceCount : 0;
+//     const averageVowelCountPerWord = wordCount ? totalVowelCount / wordCount : 0;
 
-    return {
-        sentenceCount,
-        wordCount,
-        averageWordCountPerSentence,
-        totalVowelCount,
-        averageVowelCountPerWord,
-        wordFrequency
-    };
-}
+//     return {
+//         sentenceCount,
+//         wordCount,
+//         averageWordCountPerSentence,
+//         totalVowelCount,
+//         averageVowelCountPerWord,
+//         wordFrequency
+//     };
+// }
 
 function showResults(results) {
-    const {
-        sentenceCount,
-        wordCount,
-        averageWordCountPerSentence,
-        totalVowelCount,
-        averageVowelCountPerWord,
-        wordFrequency
-      } = results;
-    document.querySelector('#sentence-count-result').innerText = sentenceCount;
+    // const {
+    //     sentenceCount,
+    //     wordCount,
+    //     averageWordCountPerSentence,
+    //     totalVowelCount,
+    //     averageVowelCountPerWord,
+    //     wordFrequency
+    //   } = results;
+    // document.querySelector('#sentence-count-result').innerText = sentenceCount;
 
-    document.querySelector('#word-count-result').innerText = wordCount;
-    document.querySelector('#avg-word-result').innerText = averageWordCountPerSentence;
-    document.querySelector('#total-vowels-result').innerText = totalVowelCount;
-    document.querySelector('#avg-vowel-result').innerText = averageVowelCountPerWord;
-    const wordFrequencyList = document.getElementById('wordFrequency');
-    wordFrequencyList.innerHTML = '';
-    for (const [word, count] of Object.entries(wordFrequency)) {
-        const listItem = document.createElement('li');
-        listItem.innerText = `${word}: ${count}`;
-        wordFrequencyList.appendChild(listItem);
+    // document.querySelector('#word-count-result').innerText = wordCount;
+    // document.querySelector('#avg-word-result').innerText = averageWordCountPerSentence;
+    // document.querySelector('#total-vowels-result').innerText = totalVowelCount;
+    // document.querySelector('#avg-vowel-result').innerText = averageVowelCountPerWord;
+    // const wordFrequencyList = document.getElementById('wordFrequency');
+    // wordFrequencyList.innerHTML = '';
+    // for (const [word, count] of Object.entries(wordFrequency)) {
+    //     const listItem = document.createElement('li');
+    //     listItem.innerText = `${word}: ${count}`;
+    //     wordFrequencyList.appendChild(listItem);
+    // }
+
+    for (const [key, value] of Object.entries(results)) {
+        document.querySelector(`#${key}`).innerText = value;
     }
 }
 
