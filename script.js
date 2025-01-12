@@ -7,6 +7,8 @@ async function processFile() {
             processDocx(file);
         } else if (file.name.endsWith('.pages')) {
             await processPages(file);
+        } else if (file.name.endsWith('.pdf')) {
+            await processPdf(file);
         } else {
             alert("Unsupported file format. Please upload a .docx or .pages file.");
         }
@@ -41,6 +43,31 @@ async function processPages(file) {
         for (const node of textNodes) {
             text += node.textContent + ' ';
         }
+        const analysis = analyzeText(text);
+        showResults(analysis);
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+async function processPdf(file) {
+    const reader = new FileReader();
+    reader.onload = async function (event) {
+        const pdfData = new Uint8Array(event.target.result);
+
+        // Load the PDF using PDF.js
+        const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+        const numPages = pdf.numPages;
+        let text = '';
+
+        for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const textContent = await page.getTextContent();
+
+            // Extract text from each page
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            text += pageText + '\n';
+        }
+
         const analysis = analyzeText(text);
         showResults(analysis);
     };
