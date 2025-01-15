@@ -23,8 +23,9 @@ function processDocx(file) {
         mammoth.extractRawText({ arrayBuffer: event.target.result })
             .then(result => {
                 const text = result.value;
-                const analysis = analyzeText(text);
-                showResults(analysis);
+                // const analysis = analyzeText(text);
+                // showResults(analysis);
+                analyzeTextHelper(text);
             })
             .catch(err => console.error(err));
     };
@@ -43,8 +44,9 @@ async function processPages(file) {
         for (const node of textNodes) {
             text += node.textContent + ' ';
         }
-        const analysis = analyzeText(text);
-        showResults(analysis);
+        // const analysis = analyzeText(text);
+        // showResults(analysis);
+        analyzeTextHelper(text);
     };
     reader.readAsArrayBuffer(file);
 }
@@ -68,10 +70,18 @@ async function processPdf(file) {
             text += pageText + '\n';
         }
 
-        const analysis = analyzeText(text);
-        showResults(analysis);
+        // const analysis = analyzeText(text);
+        // showResults(analysis);
+        analyzeTextHelper(text);
     };
     reader.readAsArrayBuffer(file);
+}
+
+function analyzeTextHelper(text) {
+    const textAnalyzer = new GeorgianTextAnalyzer();
+    const result = textAnalyzer.analyze(text);
+    console.log(result)
+    showResults(result)
 }
 
 // function analyzeText(text) {
@@ -150,7 +160,10 @@ function showResults(results) {
     // }
 
     for (const [key, value] of Object.entries(results)) {
-        document.querySelector(`#${key}`).innerText = value;
+        const target = document.querySelector(`#${key}`);
+        if (target) {
+            target.innerText = value;
+        }
     }
 }
 
