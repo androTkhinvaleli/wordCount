@@ -96,71 +96,72 @@ class GeorgianTextAnalyzer {
     }
 
     getSentences(text) {
+        // First, insert spaces after periods that are followed directly by letters
+        text = text.replace(/\.([ა-ჰ])/g, '. $1');
+        
         const sentences = [];
         let currentSentence = '';
         let i = 0;
 
         while (i < text.length) {
             let char = text[i];
-            
-            // Add current character to sentence
             currentSentence += char;
             
             // Check for sentence end conditions
-            if (i + 1 < text.length) {
-                let nextChar = text[i + 1];
+            if (this.sentenceTerminators.includes(char)) {
+                // Look ahead to see what comes after
+                let nextChar = text[i + 1] || '';
+                let nextTwoChars = text.slice(i + 1, i + 3);
                 
                 // Case 1: Ellipsis
-                if (char === '.' && text.slice(i, i + 3) === '...') {
-                    // Check if it's a true sentence end or just a pause
-                    let afterEllipsis = text.slice(i + 3).trim();
+                if (char === '.' && nextTwoChars === '..') {
+                    i += 2; // Skip next two dots
+                    currentSentence += '..';
+                    
+                    // Check what comes after ellipsis
+                    let afterEllipsis = text.slice(i + 1).trim();
                     if (afterEllipsis.startsWith('–') || 
                         afterEllipsis.startsWith('-') || 
                         !afterEllipsis.length) {
-                        sentences.push(currentSentence.trim());
-                        currentSentence = '';
-                        i += 2; // Skip the other two dots
-                    } else {
-                        i += 2; // Skip the other two dots but keep in same sentence
+                        if (currentSentence.trim()) {
+                            sentences.push(currentSentence.trim());
+                            currentSentence = '';
+                        }
                     }
                 }
-                // Case 2: Regular sentence terminators
-                else if (this.sentenceTerminators.includes(char)) {
-                    // Check for special cases
-                    if (nextChar === ' ' || nextChar === '\n' || nextChar === '–' || !nextChar) {
+                // Case 2: Regular sentence end
+                else {
+                    if (currentSentence.trim()) {
                         sentences.push(currentSentence.trim());
                         currentSentence = '';
                     }
-                }
-                // Case 3: Dialog marker followed by sentence terminator
-                else if (char === '–' && this.sentenceTerminators.includes(nextChar)) {
-                    sentences.push(currentSentence.trim() + nextChar);
-                    currentSentence = '';
-                    i++; // Skip the terminator
-                }
-            }
-            // End of text
-            else if (i === text.length - 1) {
-                if (currentSentence.trim()) {
-                    sentences.push(currentSentence.trim());
                 }
             }
             
             i++;
         }
         
-        // Clean up sentences
+        // Add any remaining text
+        if (currentSentence.trim()) {
+            sentences.push(currentSentence.trim());
+        }
+        
+        // Post-process sentences
         return sentences
             .filter(s => s.trim().length > 0)
             .map(s => s.trim())
             .flatMap(s => {
-                // Split on dialogue markers if they start new sentences
+                // Handle dialogue markers
                 if (s.includes('–')) {
-                    const parts = s.split('–').map(p => p.trim()).filter(p => p.length > 0);
-                    return parts.map((p, idx) => idx === 0 ? p : '–' + p);
+                    return s.split(/(?<=\.) –/)
+                        .map(p => p.trim())
+                        .filter(p => p.length > 0)
+                        .map((p, idx) => idx === 0 ? p : '–' + p);
                 }
-                return [s];
-            });
+                // Split remaining sentences that might be joined
+                return s.split(/(?<=\.)\s+(?=[ა-ჰ])/);
+            })
+            .filter(s => s.trim().length > 0);
     }
 
     getWords(text) {
@@ -215,3 +216,4 @@ class GeorgianTextAnalyzer {
             0;
     }
 }
+
